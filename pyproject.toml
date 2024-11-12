@@ -10,6 +10,7 @@ dependencies = [
     "langchain-text-splitters>=0.3.0",
     "graspologic>=3.4.1",
     "tableprint>=0.9.1",
+    "langchain-huggingface>=0.1.2",
 ]
 readme = "README.md"
 requires-python = ">= 3.10"
@@ -34,6 +35,17 @@ dev-dependencies = [
     "mkdocs-section-index>=0.3.9",
     "mkdocs-material>=9.5.31",
     "mkdocs-jupyter>=0.24.8",
+]
+excluded-dependencies = [
+    "sentence-transformers",
+    "torch",
+    "nvidia-cublas-cu12",
+    "nvidia-cusolver-cu12",
+    "nvidia-cusparse-cu12",
+    "nvidia-nccl-cu12",
+    "nvidia-cufft-cu12",
+    "nvidia-cudnn-cu12",
+    "triton",
 ]
 
 [tool.hatch.metadata]

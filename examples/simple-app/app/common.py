@@ -20,6 +20,7 @@ from langchain_openai import (
     ChatOpenAI,
     OpenAIEmbeddings,
 )
+from langchain_huggingface import HuggingFacePipeline
 
 from langchain_graphrag.indexing import IndexerArtifacts
 
@@ -36,12 +37,14 @@ class LLMType(str, Enum):
     openai: str = "openai"
     azure_openai: str = "azure_openai"
     ollama: str = "ollama"
+    huggingface: str = "huggingface"
 
 
 class EmbeddingModelType(str, Enum):
     openai: str = "openai"
     azure_openai: str = "azure_openai"
     ollama: str = "ollama"
+    multimeditron: str = "multimeditron"
 
 
 def check_required_envs(envs_to_check: list[str]):
@@ -146,6 +149,15 @@ def make_llm_instance(
             num_ctx=ollama_num_context,
             num_predict=-1,
         )
+    
+    if llm_type == LLMType.huggingface:
+        return HuggingFacePipeline.from_model_id(
+            model=model, 
+            task="text-generation",
+            device_map="auto",
+            pipeline_kwargs={"temperature" : temperature, "top_p" : top_p}
+        )
+    
 
     raise ValueError
 
