@@ -20,9 +20,10 @@ from langchain_openai import (
     ChatOpenAI,
     OpenAIEmbeddings,
 )
-from langchain_huggingface import HuggingFacePipeline
-
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_graphrag.indexing import IndexerArtifacts
+
+from rag.models.meditron_model import MeditronModelLLMWrapper
 
 _LOGGER = logging.getLogger("main:common")
 
@@ -37,14 +38,14 @@ class LLMType(str, Enum):
     openai: str = "openai"
     azure_openai: str = "azure_openai"
     ollama: str = "ollama"
-    huggingface: str = "huggingface"
+    multimeditron: str = "multimeditron"
 
 
 class EmbeddingModelType(str, Enum):
     openai: str = "openai"
     azure_openai: str = "azure_openai"
     ollama: str = "ollama"
-    multimeditron: str = "multimeditron"
+    huggingface: str = "huggingface"
 
 
 def check_required_envs(envs_to_check: list[str]):
@@ -150,14 +151,13 @@ def make_llm_instance(
             num_predict=-1,
         )
     
-    if llm_type == LLMType.huggingface:
-        return HuggingFacePipeline.from_model_id(
-            model=model, 
-            task="text-generation",
-            device_map="auto",
-            pipeline_kwargs={"temperature" : temperature, "top_p" : top_p}
-        )
-    
+    if llm_type == LLMType.multimeditron:
+        # return HuggingFacePipeline.from_model_id(
+        #     model_id=model,
+        #     task="text-generation",
+        #     pipeline_kwargs={"temperature" : temperature, "top_p" : top_p},
+        # )
+        return MeditronModelLLMWrapper(model_name=model)
 
     raise ValueError
 
@@ -188,6 +188,11 @@ def make_embedding_instance(
         )
     elif embedding_type == EmbeddingModelType.ollama:
         underlying_embedding = OllamaEmbeddings(model=model)
+        
+    elif embedding_type == EmbeddingModelType.huggingface:
+        underlying_embedding = HuggingFaceEmbeddings(
+            model_name=model
+        )
 
     embedding_db_path = "sqlite:///" + str(cache_dir.joinpath("embedding.db"))
     store = SQLStore(namespace=model, db_url=embedding_db_path)

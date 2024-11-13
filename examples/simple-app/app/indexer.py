@@ -96,11 +96,6 @@ def index(
             ["Embedding Model", embedding_model],
             ["Chunk Size", chunk_size],
             ["Chunk Overlap", chunk_overlap],
-            ["OLLAMA_HOST", os.getenv("OLLAMA_HOST")],
-            [
-                "Ollama Num Context",
-                "Not Provided" if ollama_num_context is None else ollama_num_context,
-            ],
         ]
     )
 
@@ -145,7 +140,7 @@ def index(
 
     # let's create a collection name based on
     # the embedding model name
-    entities_collection_name = f"entity-{embedding_model}"
+    entities_collection_name = f"entity-multimeditron"
     entities_vector_store = ChromaVectorStore(
         collection_name=entities_collection_name,
         persist_directory=str(vector_store_dir),
